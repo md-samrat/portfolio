@@ -112,8 +112,9 @@ export function Hero() {
             </Magnetic>
             <Magnetic>
               <a
-                href="/resume.pdf"
+                href="https://drive.google.com/file/d/1r_yWQtXndhkYynRtFVKU56SlWAfIuQY0/view?usp=sharing"
                 download
+                target="_blank"
                 className={buttonVariants({ variant: "outline" }) + " gap-2"}
               >
                 <Download size={16} />
