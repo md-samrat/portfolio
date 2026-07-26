@@ -8,7 +8,7 @@ import { cn, scrollToSection } from "@/lib/utils";
 import { useActiveSection } from "@/hooks/use-active-section";
 import { useScrolled } from "@/hooks/use-scroll-progress";
 import { Button } from "@/components/ui/button";
-
+import { CodeXml } from "lucide-react";
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const scrolled = useScrolled();
@@ -38,16 +38,16 @@ export function Navbar() {
               : "border-transparent bg-transparent"
           )}
         >
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-edge font-display text-sm font-semibold text-gold"
-          >
-            MS
-          </a>
+         <a
+  href="#"
+  onClick={(e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }}
+  className="flex h-10 w-10 items-center justify-center rounded-full border border-edge text-gold transition-all duration-300 hover:border-gold hover:bg-gold/10"
+>
+  <CodeXml size={20} strokeWidth={2.2} />
+</a>
 
           <nav className="hidden items-center gap-1 md:flex">
             {navItems.map((item) => {

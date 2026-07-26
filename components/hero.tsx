@@ -75,7 +75,7 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl"
           >
-            MD <span className="gold-text">Samrat</span>
+            Mohammad <span className="gold-text">Samrat</span>
           </motion.h1>
 
           <motion.div
@@ -95,8 +95,8 @@ export function Hero() {
             className="mt-6 max-w-lg text-balance leading-relaxed text-muted"
           >
             I design and build full stack web applications with clean
-            architecture, fast performance, and interfaces people actually
-            enjoy using.
+            architecture, fast performance, and interfaces people actually enjoy
+            using.
           </motion.p>
 
           <motion.div
@@ -125,24 +125,44 @@ export function Hero() {
         </div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.94 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mx-auto w-full max-w-sm"
+          transition={{ duration: 0.8 }}
+          className="relative mx-auto w-full max-w-[420px]"
         >
-          <div className="animate-float">
-            <div className="group relative aspect-[4/5] w-full overflow-hidden rounded-[28px] border border-edge bg-card shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)]">
+          {/* Gold Glow */}
+          <div className="absolute inset-0 -z-20 rounded-[36px] bg-gold/10 blur-3xl" />
+
+          {/* Border */}
+          <div className="absolute -inset-2 -z-10 rounded-[34px] border border-gold/20" />
+
+          {/* Image Card */}
+          <div className="group relative overflow-hidden rounded-[32px] border border-edge bg-card/70 shadow-[0_25px_80px_rgba(0,0,0,0.45)] backdrop-blur">
+            <div className="relative aspect-[4/5]">
               <Image
                 src="/profile.jpg"
-                alt="Portrait of MD Samrat, Full Stack Web Developer"
+                alt="Portrait of MD Samrat"
                 fill
                 priority
-                sizes="(max-width: 768px) 90vw, 420px"
-                className="object-cover object-top grayscale-[15%] transition-transform duration-700 ease-out group-hover:scale-105"
+                quality={100}
+                sizes="(max-width:768px) 90vw, 420px"
+                className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
             </div>
-            <div className="absolute -inset-3 -z-10 rounded-[34px] border border-gold/20" />
+
+            {/* Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+
+            {/* Bottom Info */}
+            <div className="absolute bottom-0 left-0 right-0 p-6">
+              <div className="rounded-2xl border border-white/10 bg-black/40 p-4 backdrop-blur-md">
+                <p className="text-xl font-semibold text-white">Mohammad Samrat</p>
+
+                <p className="mt-1 text-sm text-zinc-300">
+                  Full Stack Developer
+                </p>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>

@@ -8,7 +8,7 @@ const inter = Inter({
   display: "swap",
 });
 
-const SITE_URL = "https://mdsamrat.dev";
+const SITE_URL = "https://md-samrat.dev";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

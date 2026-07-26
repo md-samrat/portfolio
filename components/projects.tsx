@@ -74,17 +74,16 @@ export function Projects() {
             >
               <TiltCard className="group relative flex h-full flex-col overflow-hidden rounded-[28px] border border-edge bg-card/70 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-gold/40 hover:shadow-[0_20px_70px_rgba(255,196,0,0.08)]">
                 {/* Image */}
-                <div className="relative mx-4 mt-4 aspect-[16/9] overflow-hidden rounded-2xl border border-edge">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    sizes="(max-width:768px)100vw,50vw"
-                    className="object-cover object-top transition duration-700 group-hover:scale-105"
-                  />
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                </div>
+                <div className="relative mx-4 mt-4 h-64 overflow-hidden rounded-2xl border border-edge bg-black">
+  <Image
+    src={project.image}
+    alt={project.title}
+    fill
+    quality={100}
+    sizes="(max-width: 768px) 100vw, 50vw"
+    className="object-contain transition-transform duration-700 group-hover:scale-105"
+  />
+</div>
 
                 {/* Content */}
                 <div className="flex flex-1 flex-col p-6">
