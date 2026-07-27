@@ -336,10 +336,9 @@ export function Skills() {
                         height: nodeSize,
                       }}
                     >
-                      <Icon
-                        size={iconSize}
-                        className="text-yellow-500 transition-transform duration-300 group-hover:rotate-12"
-                      />
+                      <div className="text-yellow-500 transition-transform duration-300 group-hover:rotate-12">
+                        <Icon size={iconSize} />
+                      </div>
                     </div>
                     <span className={cn(
                       "mt-1.5 sm:mt-3 font-medium tracking-wider text-gold/70 group-hover:text-gold transition-colors duration-300 whitespace-nowrap",
