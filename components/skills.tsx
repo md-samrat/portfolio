@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ComponentType } from "react";
+import { useState, useMemo, type ComponentType } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   SiHtml5,
@@ -56,93 +56,306 @@ const iconMap: Record<string, ComponentType<{ size?: number }>> = {
   figma: SiFigma,
 };
 
+// Responsive configuration based on screen width
+const getConfig = (width: number) => {
+  if (width < 480) {
+    return {
+      nodeSize: 65,
+      gapX: 100,
+      gapY: 95,
+      cols: 3,
+      iconSize: 28,
+      scale: 0.85,
+    };
+  } else if (width < 640) {
+    return {
+      nodeSize: 70,
+      gapX: 115,
+      gapY: 105,
+      cols: 3,
+      iconSize: 30,
+      scale: 0.9,
+    };
+  } else if (width < 768) {
+    return {
+      nodeSize: 75,
+      gapX: 130,
+      gapY: 115,
+      cols: 3,
+      iconSize: 32,
+      scale: 0.95,
+    };
+  } else if (width < 1024) {
+    return {
+      nodeSize: 75,
+      gapX: 145,
+      gapY: 130,
+      cols: 4,
+      iconSize: 32,
+      scale: 0.95,
+    };
+  } else {
+    return {
+      nodeSize: 80,
+      gapX: 165,
+      gapY: 145,
+      cols: 4,
+      iconSize: 36,
+      scale: 1,
+    };
+  }
+};
+
 export function Skills() {
   const [filter, setFilter] = useState("All");
+  const [width, setWidth] = useState(1024);
+
+  // Handle resize
+  useState(() => {
+    if (typeof window !== 'undefined') {
+      setWidth(window.innerWidth);
+      const handleResize = () => setWidth(window.innerWidth);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  });
 
   const filters = ["All", ...skillCategories];
 
-  const visible =
+  const visibleSkills =
     filter === "All"
       ? skills
       : skills.filter((skill) => skill.category === filter);
 
+  const config = useMemo(() => getConfig(width), [width]);
+  const { nodeSize, gapX, gapY, cols, iconSize, scale } = config;
+
+  const positions = useMemo(() => {
+    return visibleSkills.map((_, idx) => {
+      const row = Math.floor(idx / cols);
+      const col = idx % cols;
+      const isOddRow = row % 2 === 1;
+      const xOffset = isOddRow ? gapX / 2 : 0;
+      return {
+        x: col * gapX + nodeSize / 2 + xOffset,
+        y: row * gapY + nodeSize / 2,
+      };
+    });
+  }, [visibleSkills, cols, gapX, gapY, nodeSize]);
+
+  const lines = useMemo(() => {
+    const linesArr: {
+      from: number;
+      to: number;
+      x1: number;
+      y1: number;
+      x2: number;
+      y2: number;
+    }[] = [];
+
+    visibleSkills.forEach((_, i) => {
+      const row = Math.floor(i / cols);
+      const col = i % cols;
+      const isOddRow = row % 2 === 1;
+
+      if (col < cols - 1 && i + 1 < visibleSkills.length) {
+        const next = i + 1;
+        if (Math.floor(next / cols) === row) {
+          linesArr.push({
+            from: i,
+            to: next,
+            x1: positions[i].x,
+            y1: positions[i].y,
+            x2: positions[next].x,
+            y2: positions[next].y,
+          });
+        }
+      }
+
+      const nextRow = row + 1;
+      const nextRowStart = nextRow * cols;
+
+      if (nextRowStart < visibleSkills.length) {
+        if (isOddRow) {
+          const targetCol = col;
+          if (nextRowStart + targetCol < visibleSkills.length) {
+            linesArr.push({
+              from: i,
+              to: nextRowStart + targetCol,
+              x1: positions[i].x,
+              y1: positions[i].y,
+              x2: positions[nextRowStart + targetCol].x,
+              y2: positions[nextRowStart + targetCol].y,
+            });
+          }
+          if (col > 0 && nextRowStart + col - 1 < visibleSkills.length) {
+            linesArr.push({
+              from: i,
+              to: nextRowStart + col - 1,
+              x1: positions[i].x,
+              y1: positions[i].y,
+              x2: positions[nextRowStart + col - 1].x,
+              y2: positions[nextRowStart + col - 1].y,
+            });
+          }
+        } else {
+          const targetCol = col;
+          if (nextRowStart + targetCol < visibleSkills.length) {
+            linesArr.push({
+              from: i,
+              to: nextRowStart + targetCol,
+              x1: positions[i].x,
+              y1: positions[i].y,
+              x2: positions[nextRowStart + targetCol].x,
+              y2: positions[nextRowStart + targetCol].y,
+            });
+          }
+          if (
+            col < cols - 1 &&
+            nextRowStart + col + 1 < visibleSkills.length
+          ) {
+            linesArr.push({
+              from: i,
+              to: nextRowStart + col + 1,
+              x1: positions[i].x,
+              y1: positions[i].y,
+              x2: positions[nextRowStart + col + 1].x,
+              y2: positions[nextRowStart + col + 1].y,
+            });
+          }
+        }
+      }
+    });
+
+    return linesArr;
+  }, [visibleSkills, positions, cols]);
+
+  const baseWidth = cols * gapX + nodeSize + gapX / 2;
+  const baseHeight =
+    Math.ceil(visibleSkills.length / cols) * gapY + nodeSize;
+
   return (
-    <section id="skills" className="relative py-28 sm:py-36">
-      <div className="container-content">
+    <section id="skills" className="relative py-16 sm:py-28 overflow-hidden">
+      <div className="container-content px-4 sm:px-6">
         <SectionHeading
           eyebrow="Skills"
           title="Tools I Reach For Every Day"
         />
 
-        {/* Filter */}
-        <div className="mb-12 flex flex-wrap justify-center gap-3">
+        {/* ফিল্টার বাটন */}
+        <div className="mb-8 sm:mb-16 flex flex-wrap justify-center gap-1.5 sm:gap-2">
           {filters.map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
               className={cn(
-                "rounded-full border border-edge bg-card/40 px-5 py-2 text-xs font-medium uppercase tracking-[0.15em] transition-all duration-300",
+                "rounded-full px-3.5 sm:px-5 py-1.5 sm:py-2 text-[10px] sm:text-xs font-medium uppercase tracking-widest border transition-all duration-300",
                 filter === f
-                  ? "border-gold bg-gold/10 text-gold shadow-[0_0_20px_rgba(234,179,8,0.15)]"
-                  : "text-muted hover:border-gold/40 hover:text-gold"
+                  ? "bg-gold/10 border-gold text-gold shadow-[0_0_25px_rgba(234,179,8,0.2)] scale-105"
+                  : "bg-card/30 border-edge text-muted hover:border-gold/50 hover:text-gold"
               )}
             >
               {f}
             </button>
           ))}
         </div>
+      </div>
 
-        {/* Cards */}
-        <motion.div
-          layout
-          className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-        >
-          <AnimatePresence mode="popLayout">
-            {visible.map((skill) => {
-              const Icon = iconMap[skill.icon] ?? Code2;
+      {/* সেন্টার কন্টেইনার */}
+      <div className="relative w-full overflow-hidden px-2 sm:px-6">
+        <div className="flex justify-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={filter}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="relative"
+              style={{
+                width: baseWidth,
+                height: baseHeight,
+                maxWidth: '100%',
+                transform: `scale(${scale})`,
+                transformOrigin: 'top center',
+              }}
+            >
+              {/* SVG Lines */}
+              <svg
+                className="absolute inset-0 overflow-visible"
+                style={{ zIndex: 0 }}
+              >
+                {lines.map((line, idx) => (
+                  <motion.line
+                    key={`${line.from}-${line.to}`}
+                    x1={line.x1}
+                    y1={line.y1}
+                    x2={line.x2}
+                    y2={line.y2}
+                    stroke="rgba(234,179,8,0.2)"
+                    strokeWidth={width < 640 ? 1.5 : 2}
+                    strokeDasharray="4 8"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    transition={{
+                      duration: 1.5,
+                      delay: idx * 0.02,
+                      ease: "easeInOut",
+                    }}
+                  />
+                ))}
+              </svg>
 
-              return (
-                <motion.div
-                  key={skill.name}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  whileHover={{
-                    y: -8,
-                    scale: 1.03,
-                  }}
-                  transition={{ duration: 0.35 }}
-                  className="group relative overflow-hidden rounded-3xl border border-edge bg-card/50 backdrop-blur-xl p-6 transition-all duration-500 hover:border-gold/40 hover:shadow-[0_15px_50px_rgba(234,179,8,0.08)]"
-                >
-                  {/* Glow */}
-                  <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                    <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gold/10 blur-3xl" />
-                  </div>
-
-                  {/* Icon */}
-                  <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl border border-edge bg-background/50 transition-all duration-300 group-hover:border-gold/40 group-hover:text-gold">
-                    <Icon size={28} />
-                  </div>
-
-                  {/* Content */}
-                  <div className="relative z-10 mt-5">
-                    <h3 className="text-lg font-semibold text-foreground transition-colors duration-300 group-hover:text-gold">
+              {/* Nodes */}
+              {visibleSkills.map((skill, idx) => {
+                const Icon = iconMap[skill.icon] ?? Code2;
+                return (
+                  <motion.div
+                    key={skill.name}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 250,
+                      damping: 20,
+                      delay: idx * 0.03,
+                    }}
+                    className="group absolute flex flex-col items-center"
+                    style={{
+                      left: positions[idx].x - nodeSize / 2,
+                      top: positions[idx].y - nodeSize / 2,
+                      zIndex: 10,
+                    }}
+                  >
+                    <div className="absolute -inset-2 sm:-inset-3 rounded-full bg-yellow-500/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div 
+                      className="relative flex items-center justify-center rounded-full bg-yellow-500/5 ring-1 ring-yellow-500/20 backdrop-blur-sm transition-all duration-300 group-hover:bg-yellow-500/20 group-hover:ring-yellow-500/60 group-hover:scale-110 group-hover:shadow-[0_0_45px_rgba(234,179,8,0.6)]"
+                      style={{
+                        width: nodeSize,
+                        height: nodeSize,
+                      }}
+                    >
+                      <Icon
+                        size={iconSize}
+                        className="text-yellow-500 transition-transform duration-300 group-hover:rotate-12"
+                      />
+                    </div>
+                    <span className={cn(
+                      "mt-1.5 sm:mt-3 font-medium tracking-wider text-gold/70 group-hover:text-gold transition-colors duration-300 whitespace-nowrap",
+                      width < 480 ? "text-[10px]" : 
+                      width < 640 ? "text-[11px]" : 
+                      width < 768 ? "text-xs" : 
+                      "text-sm sm:text-base"
+                    )}>
                       {skill.name}
-                    </h3>
-
-                    <p className="mt-2 text-sm text-muted">
-                      {skill.category}
-                    </p>
-                  </div>
-
-                  {/* Accent Line */}
-                  <div className="relative z-10 mt-6 h-[2px] w-10 rounded-full bg-gold/40 transition-all duration-300 group-hover:w-20" />
-                </motion.div>
-              );
-            })}
+                    </span>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
           </AnimatePresence>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
