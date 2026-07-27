@@ -112,7 +112,7 @@ export function Hero() {
             </Magnetic>
             <Magnetic>
               <a
-                href="https://drive.google.com/file/d/1r_yWQtXndhkYynRtFVKU56SlWAfIuQY0/view?usp=sharing"
+                href="https://drive.google.com/file/d/1cHcGJIdGmES5TvYNfrcQOWlfHf9duJOB/view?usp=sharing"
                 download
                 target="_blank"
                 className={buttonVariants({ variant: "outline" }) + " gap-2"}
