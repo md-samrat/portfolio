@@ -31,11 +31,11 @@ export const projects: ProjectItem[] = [
     image: "https://i.ibb.co/zV3nxhnx/Screenshot-2026-07-13-131249.png",
   },
   {
-    title: "Stockroom",
+    title: "VYBÉRA",
     summary:
       "A modern clothing e-commerce storefront with a fast, minimal checkout experience.",
     tech: ["Next.js", "Auth.js", "Prisma", "PostgreSQL"],
-    live: "https://stockroom-store.vercel.app",
+    live: "https://vyb-era.vercel.app",
     repo: "https://github.com/md-samrat/stockroom",
     image:
       "https://res.cloudinary.com/tyehy44g/image/upload/v1785051360/Screenshot_2026-07-26_133446_chbelp.png",
